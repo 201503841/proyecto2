@@ -1,0 +1,22 @@
+// EJECUTAR ORACLE 
+sudo /opt/sqldeveloper/sqldeveloper.sh
+
+
+//LEVANTAR DOCKER ORACLE
+sudo docker ps -a
+sudo docker start 90243dbf1a10 
+sudo docker exec -it focused_liskov bash
+
+//levantar BASE DE DATOS
+sh post_install.sh
+
+
+
+// CORRER EN NETBEANS
+npm run dev 
+
+//VARIABLE DE ENTORNO
+export LD_LIBRARY_PATH=/opt/instantclient_21_3/
+echo $LD_LIBRARY_PATH
+
+
