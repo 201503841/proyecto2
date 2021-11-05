@@ -1,4 +1,6 @@
 const oracledb = require('oracledb');
+const { Console } = require('console');
+const bodyParser = require('body-parser');
 
 cns = {
     user: "test",

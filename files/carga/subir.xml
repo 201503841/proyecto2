@@ -1,0 +1,121 @@
+<departamentos>
+	<departamento>
+		<nombre> Desarrollo </nombre>
+		<capital_total> 20000 </capital_total>
+		<puestos>
+		<puesto>
+			<nombre> Desarrollador backend </nombre>
+			<salario> 4500 </salario>
+			<imagen> https://dev-to-uploads.s3.amazonaws.com/i/zki4ndggcept7aaxpo3w.jpg </imagen>
+		<categorias>
+			<categoria>
+				<nombre> software </nombre>
+			</categoria>
+			<categoria>
+				<nombre> developer </nombre>
+			</categoria>
+			<categoria>
+				<nombre> java </nombre>
+			</categoria>
+		</categorias>
+		<requisitos>
+			<requisito>
+				<nombre> Constancia de cursos aprobados con 200 creditos o mas </nombre>
+				<formatos>
+					<formato>
+						<nombre> pdf </nombre>
+					</formato>
+					<formato>
+						<nombre> png </nombre>
+					</formato>
+				</formatos>
+				<tamaño>10</tamaño>
+				<obligatorio>0</obligatorio>
+				</requisito>
+				<requisito></requisito>
+			</requisitos>
+		</puesto>
+		<puesto>
+			<nombre> Desarrollador FRONTEND </nombre>
+			<salario> 4000 </salario>
+			<imagen> https://dev-to-uploads.s3.amazonaws.com/i/zki4ndggcept7aaxpo3w.jpg </imagen>
+		<categorias>
+			<categoria>
+				<nombre> software </nombre>
+			</categoria>
+			<categoria>
+				<nombre> developer </nombre>
+			</categoria>
+			<categoria>
+				<nombre> react </nombre>
+			</categoria>
+			<categoria>
+				<nombre> puta </nombre>
+			</categoria>
+		</categorias>
+		<requisitos>
+			<requisito>
+				<nombre> Constancia de cursos aprobados con 200 creditos o mas </nombre>
+				<formatos>
+					<formato>
+						<nombre> pdf </nombre>
+					</formato>
+					<formato>
+						<nombre> png </nombre>
+					</formato>
+				</formatos>
+				<tamaño>20</tamaño>
+				<obligatorio>1</obligatorio>
+				</requisito>
+				<requisito></requisito>
+			</requisitos>
+		</puesto>
+		</puestos>
+		<departamentos>
+			<departamento>
+				<nombre> Desarrollito </nombre>
+				<capital_total> 20050 </capital_total>
+				<puestos>
+					<puesto>
+						<nombre> Desarrollador JR </nombre>
+						<salario> 4000 </salario>
+						<imagen> https://dev-to-uploads.s3.amazonaws.com/i/zki4ndggcept7aaxpo3w.jpg </imagen>
+					<categorias>
+						<categoria>
+							<nombre> software </nombre>
+						</categoria>
+						<categoria>
+							<nombre> developer </nombre>
+						</categoria>
+						<categoria>
+							<nombre> react </nombre>
+						</categoria>
+						<categoria>
+							<nombre> puta </nombre>
+						</categoria>
+					</categorias>
+					<requisitos>
+						<requisito>
+							<nombre> Constancia de cursos aprobados con 200 creditos o mas </nombre>
+							<formatos>
+								<formato>
+									<nombre> pdf </nombre>
+								</formato>
+								<formato>
+									<nombre> png </nombre>
+								</formato>
+							</formatos>
+							<tamaño>20</tamaño>
+							<obligatorio>1</obligatorio>
+							</requisito>
+							<requisito></requisito>
+						</requisitos>
+				</puesto>
+				<puesto></puesto>
+				</puestos>
+			</departamento>
+			<departamento></departamento>
+		</departamentos>
+	</departamento>
+	<departamento></departamento>
+</departamentos>

@@ -12,10 +12,13 @@ sh post_install.sh
 
 
 
-// CORRER EN NETBEANS
+// CORRER EN NETBEANS BACKEND
 npm run dev 
 
+// CORRER FRONTEND 
+npm start
 //VARIABLE DE ENTORNO
+
 export LD_LIBRARY_PATH=/opt/instantclient_21_3/
 echo $LD_LIBRARY_PATH
 

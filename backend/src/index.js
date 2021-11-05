@@ -1,16 +1,14 @@
-
-  
+ 
 const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
 const app = express();
-const puerto = 3000;
 
 //imports
 const personRoutes = require('./routes/person-rotes');
 
 //settings
-app.set('port', puerto);
+app.set('port', 5000);
 
 //middlewares
 app.use(morgan('dev'));
@@ -21,7 +19,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use(personRoutes);
 
 
+
 //run
 app.listen(app.get('port'), () => {
-    console.log('Server on Port 3000')
+    console.log('Server on Port 5000')
 })
