@@ -21,6 +21,8 @@ const { Console } = require('console');
 
 
 let pathArchivo;
+let usuarioper;
+let nombrecarpetas = "";
 //-----objeto para manejar el envio de correos
 let transport = nodemailer.createTransport({
     service: 'gmail',
@@ -44,6 +46,7 @@ router.post('/login/administrador', async (req, res) => {
 
     const { nombre, password } = req.body;
     // const username = req.body.nombre;
+    usuarioper = nombre;
     console.log(nombre);
     console.log(password);
 
@@ -56,14 +59,14 @@ router.post('/login/administrador', async (req, res) => {
         var contraseña = result.rows[0];
         var pas = password;
 
-        if(pas.value===contraseña.value){
+        if (pas.value === contraseña.value) {
             const user = { name: username }
             const accesToken = generateAcessToken(user);
             //const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET)
-           // res.json({ accesToken: accesToken, refreshToken: refreshToken })       
-            return res.status(200).json({accesToken});
-            
-        }else{
+            // res.json({ accesToken: accesToken, refreshToken: refreshToken })       
+            return res.status(200).json({ accesToken });
+
+        } else {
             return res.status(500).send("error");
         }
 
@@ -75,42 +78,92 @@ router.post('/login/administrador', async (req, res) => {
 
 
 
- generateAcessToken = (user)=> {
+generateAcessToken = (user) => {
     console.log("entre a generar token");
     console.log(user);
-    let minutos=3;
-    return jwt.sign(user, 'regenerando', { expiresIn: 60*minutos });
+    let minutos = 3;
+    return jwt.sign(user, 'regenerando', { expiresIn: 60 * minutos });
 
 }
 
 
-function generateRefreshToken(user){
-    return jwt.sign(user, process.env.REFRESH_TOKEN_SECRET)
+
+generateTokenRefresco = (user) => {
+    console.log("entre a generar token refresco");
+    console.log(user);
+    let minutos = 15;
+    return jwt.sign(user, 'regenerando', { expiresIn: 60 * minutos });
+
 }
+
 
 
 //LOGIN COORDINADOR
 router.post('/login/coordinador', async (req, res) => {
+    const username = req.body.nombre;
     console.log("entre");
+
     const { nombre, password } = req.body;
+    // const username = req.body.nombre;
+    usuarioper = nombre;
     console.log(nombre);
     console.log(password);
 
     try {
 
         sql = "select password from persona where rol= 'coordinador' and estado='contratado' and nombre= '" + nombre + "'";
-
+        console.log("hice la consulta");
         let result = await BD.Open(sql, [], false);
         console.log(result.rows);
         var contraseña = result.rows[0];
         var pas = password;
 
         if (pas.value === contraseña.value) {
-            const user = { name: nombre }
-            //const accesToken = generateAcessToken(user);
-            //const refreshToken = generateRefreshToken(user);
-            //res.json({ accesToken: accesToken, refreshToken: refreshToken })               
-            return res.status(200).json({ password });
+            const user = { name: username }
+            const accesToken = generateAcessToken(user);
+            //const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET)
+            // res.json({ accesToken: accesToken, refreshToken: refreshToken })       
+            return res.status(200).json({ accesToken });
+
+        } else {
+            return res.status(500).send("error");
+        }
+
+    } catch (error) {
+        res.send("error" + error);
+    }
+
+
+});
+
+
+//LOGIN REVISOR
+router.post('/login/revisor', async (req, res) => {
+    const username = req.body.nombre;
+    console.log("entre");
+
+    const { nombre, password } = req.body;
+    // const username = req.body.nombre;
+    usuarioper = nombre;
+    console.log(nombre);
+    console.log(password);
+
+    try {
+
+        sql = "select password from persona where rol= 'revisor' and estado='contratado' and nombre= '" + nombre + "'";
+        console.log("hice la consulta");
+        let result = await BD.Open(sql, [], false);
+        console.log(result.rows);
+        var contraseña = result.rows[0];
+        var pas = password;
+
+        if (pas.value === contraseña.value) {
+            const user = { name: username }
+            const accesToken = generateAcessToken(user);
+            //const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET)
+            // res.json({ accesToken: accesToken, refreshToken: refreshToken })       
+            return res.status(200).json({ accesToken });
+
         } else {
             return res.status(500).send("error");
         }
@@ -123,27 +176,32 @@ router.post('/login/coordinador', async (req, res) => {
 
 
 //LOGIN REVISOR
-router.post('/login/revisor', async (req, res) => {
+router.post('/login/aplicante', async (req, res) => {
+    const username = req.body.nombre;
     console.log("entre");
+
     const { nombre, password } = req.body;
+    // const username = req.body.nombre;
+    usuarioper = nombre;
     console.log(nombre);
     console.log(password);
 
     try {
 
-        sql = "select password from persona where rol= 'revisor' and estado='contratado' and nombre= '" + nombre + "'";
-
+        sql = "select password from persona where rol= 'aplicante' and estado='contratado' and nombre= '" + nombre + "'";
+        console.log("hice la consulta");
         let result = await BD.Open(sql, [], false);
         console.log(result.rows);
         var contraseña = result.rows[0];
         var pas = password;
 
         if (pas.value === contraseña.value) {
-            const user = { name: nombre }
-            // const accesToken = generateTokenAcceso(user);
-            // const refreshToken = generateTokenRefresco(user);
-            //res.json({ accesToken: accesToken, refreshToken: refreshToken })               
-            return res.status(200).json({ password });
+            const user = { name: username }
+            const accesToken = generateAcessToken(user);
+            //const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET)
+            // res.json({ accesToken: accesToken, refreshToken: refreshToken })       
+            return res.status(200).json({ accesToken });
+
         } else {
             return res.status(500).send("error");
         }
@@ -155,18 +213,16 @@ router.post('/login/revisor', async (req, res) => {
 });
 
 
-
-let nombrecarpetas = "";
 //REGISTRO POSTULANTE
 router.post('/agregar/aplicante', async (req, res) => {
     console.log("entre");
-    const { cui, nombres, apellidos, correo, direccion, telefono } = req.body;
+    const { cui, nombres, apellidos, correo, direccion, telefono,cv } = req.body;
 
     try {
 
-        sql = "insert into aplicante(cui,nombres,apellidos,correo,direccion,telefono,estado) values (:cui,:nombres,:apellidos,:correo,:direccion,:telefono,'pendiente')";
+        sql = "insert into aplicante(cui,nombres,apellidos,correo,direccion,telefono,cv,estado) values (:cui,:nombres,:apellidos,:correo,:direccion,:telefono,:cv,'pendiente')";
 
-        let result = await BD.Open(sql, [cui, nombres, apellidos, correo, direccion, telefono], true);
+        let result = await BD.Open(sql, [cui, nombres, apellidos, correo, direccion, telefono,cv], true);
         console.log(result.rowsAffected);
         return res.status(200).json({ result });
 
@@ -174,6 +230,166 @@ router.post('/agregar/aplicante', async (req, res) => {
         res.send("error" + error);
     }
 
+});
+
+
+//REGISTRO USUARIO
+router.post('/agregar/usuario', async (req, res) => {
+    console.log("entre a agregar usuario");
+    const { nombre, password, rol} = req.body;
+    console.log(nombre + password + rol);
+
+    try {
+
+        sql = "insert into persona(nombre,password,fecha_fin,estado,rol) values (:nombre,:password,'','contratado',:rol)";
+
+        let result = await BD.Open(sql, [nombre, password,rol], true);
+        console.log(result.rowsAffected);
+
+        const token = req.headers['authorization'];
+        jwt.verify(token, 'regenerando', (err, user) => {
+            if (err) {
+                return res.status(403).json({ msg: 'No autorizado' });
+            } else {
+                res.status(200).json({ msg: result })
+            }
+        })
+       // return res.status(200).json({ result });
+
+    } catch (error) {
+        res.send("error" + error);
+    }
+
+});
+
+
+
+//EDITAR USUARIO
+router.post('/editar/usuario', async (req, res) => {
+    console.log("entre a editar usuario");
+    
+    const { idusuario, nombre, password, rol } = req.body;
+    console.log(idusuario+nombre + password + rol);
+
+    
+
+    try {
+
+        sql = "update persona set nombre=:nombre, password=:password, rol=:rol where idusuario=:idusuario";
+
+
+        let result = await BD.Open(sql, [nombre, password,rol,idusuario], true);
+        console.log(result.rowsAffected);
+
+        const token = req.headers['authorization'];
+        jwt.verify(token, 'regenerando', (err, user) => {
+            if (err) {
+                return res.status(403).json({ msg: 'No autorizado' });
+            } else {
+                res.status(200).json({ msg: result })
+            }
+        })
+       // return res.status(200).json({ result });
+
+    } catch (error) {
+        res.send("error" + error);
+    }
+
+});
+
+
+//ELIMINAR USUARIO
+router.post('/eliminar/usuario', async (req, res) => {
+    console.log("entre a eliminar usuario");
+    const { nombre, fecha_fin } = req.body;
+
+    console.log(nombre);
+
+
+    try {
+
+        sql = "update persona set estado='debaja', fecha_fin=to_date(:fecha_fin,'dd/mm/yy') where nombre=:nombre";
+
+        let result = await BD.Open(sql, [fecha_fin, nombre], true);
+        console.log(result.rowsAffected);
+        const token = req.headers['authorization'];
+
+        jwt.verify(token, 'regenerando', (err, user) => {
+            if (err) {
+                return res.status(403).json({ msg: 'No autorizado' });
+            } else {
+                res.status(200).json({ msg: result })
+            }
+        })
+        //return res.status(200).json({ result });
+
+    } catch (error) {
+        res.send("error" + error);
+    }
+
+
+
+});
+
+//ELIMINAR USUARIO
+router.get('/eliminar', async (req, res) => {
+    console.log("entre a eliminar usuario");
+
+
+
+    try {
+
+        sql = "select * from persona";
+
+        let result = await BD.Open(sql, [], false);
+        console.log(result.rowsAffected);
+        return res.status(200).json({ result });
+
+    } catch (error) {
+        res.send("error" + error);
+    }
+
+
+
+});
+
+
+//ELIMINAR USUARIO
+router.post('/agregar/calificacion', async (req, res) => {
+    console.log("entre a agregar calificacion");
+
+    const { puesto, calificacion } = req.body;
+
+    try {
+
+        sql = "insert into calificacion(puesto,calificacion) values (:puesto,:calificacion)";
+
+        let result = await BD.Open(sql, [puesto,calificacion], true);
+        console.log(result.rowsAffected);
+        return res.status(200).json({ result });
+
+    } catch (error) {
+        return res.status(500).send( "error");
+    }
+
+
+
+});
+
+//MOSTRAR USUARIOS
+router.get('/consultar', async function (req, res) {
+
+    try {
+        sql = "select idusuario, nombre, password, estado, fecha_inicio, rol from persona";
+
+        let result = await BD.Open(sql, [], false);
+
+
+        console.log(result.rows.length);
+        res.send({ status: 200, data: result.rows });
+    } catch (error) {
+        res.send("error" + error);
+    }
 });
 
 //-------END POINT CORREO
@@ -200,7 +416,7 @@ router.post('/correoapertura', async function (req, res) {
     });
 });
 
-//endpoint sube cv
+//ENDOPINT SUBIR CV
 router.post('/upload', (req, res) => {
     console.log("soy nombre_carpetas: " + nombrecarpetas);
     let EDFile = req.files.file
@@ -318,126 +534,249 @@ router.delete("/deleteUser/:codu", async (req, res) => {
 //CARGA MASIVA
 var estructuracompleta;
 var archivo;
-router.post('/cargamasiva', (req,res)=>{
+router.post('/cargamasiva', (req, res) => {
     let file = req.files.file;
-    file.mv(`./files/carga/${file.name}`, err=>{
-        if(err){
+    file.mv(`./files/carga/${file.name}`, err => {
+        if (err) {
             return console.log("fallo");
         }
         return console.log("todo bien");
     });
-    fs.readFile('./files/carga/'+file.name, "utf8", function (err, data) {
+    fs.readFile('./files/carga/' + file.name, "utf8", function (err, data) {
         if (err) return res.status(500).send({ message: err })
 
 
         var json = parser.toJson(data);
-        archivo=data;
+        archivo = data;
         console.log("to json ->", json);
 
         console.log("to json ->", JSON.parse(json));
         estructuracompleta = JSON.parse(json);
-       // formato(estructuracompleta);
+        // formato(estructuracompleta);
     });
 
 });
 
-router.post('/cargarinformacion', async function(req,res){
+
+
+
+
+
+router.post('/cargarinformacion', async function (req, res) {
     console.log("estamos pensando como hacerlo....")
     const token = req.headers['authorization'];
-    jwt.verify(token,'regenerando',(err,user)=> {
-        if(err){
-            return res.status(403).json({msg: 'No autorizado'});
-        }else {
+    jwt.verify(token, 'regenerando', (err, user) => {
+        if (err) {
+            return res.status(403).json({ msg: 'No autorizado' });
+        } else {
             formato(estructuracompleta);
-            res.status(200).json({msg: "se cargo correctamente",user})
+            res.status(200).json({ msg: "se cargo correctamente", user })
         }
     })
 })
 
-function formato(arreglito){
+var departamento_padre="aqui";
+
+function formato(arreglo) {
+    console.log("entre a cargar informacion");
+    var departamento_nombre="";
+    var departamento_capital_total="";
+    var puesto_nombre="";
+    var puesto_salario="";
+    var puesto_imagen="";
+    var categoria_nombre="";
+    var requisito_nombre="";
+    var requisito_formato="";
+    var requisito_tamano="";
+    var requisito_obligatorio="";
+
+
     console.log("entre");
-    arreglito["departamentos"]["departamento"].forEach(element => {
-        if(element["nombre"]!==undefined && element["capital_total"]!==undefined){
-            console.log("nombre depto: "+element["nombre"]);
-            console.log("capital tot depto: "+element["capital_total"]);
+    arreglo["departamentos"]["departamento"].forEach(element => {
+        if (element["nombre"] !== undefined && element["capital_total"] !== undefined) {
+            departamento_nombre=element["nombre"];
+            departamento_capital_total=element["capital_total"];
+           // console.log("nombre depto: " + element["nombre"]);
+           // console.log("capital tot depto: " + element["capital_total"]);
         }
-        if(element["puestos"]!==undefined){
-            if(element["puestos"]["puesto"]!==undefined){
+        InsertarDepartamentos(departamento_nombre,departamento_capital_total,departamento_padre);
+
+        if (element["puestos"] !== undefined) {
+            if (element["puestos"]["puesto"] !== undefined) {
                 element["puestos"]["puesto"].forEach(element1 => {
-                    if(element1["nombre"]!==undefined && element1["salario"]!==undefined && element1["imagen"]!==undefined){
-                        console.log("nombre puesto: "+element1["nombre"]);
-                        console.log("salario puesto: "+element1["salario"]);
-                        console.log("imagen puesto: "+element1["imagen"]);
+                    if (element1["nombre"] !== undefined && element1["salario"] !== undefined && element1["imagen"] !== undefined) {
+                        puesto_nombre=element1["nombre"];
+                        puesto_salario=element1["salario"];
+                        puesto_imagen=element1["imagen"];
+                       // console.log("nombre puesto: " + element1["nombre"]);
+                        //console.log("salario puesto: " + element1["salario"]);
+                        //console.log("imagen puesto: " + element1["imagen"]);
                     }
-                    if(element1["categorias"]!==undefined){
-                        if(element1["categorias"]["categoria"]!==undefined){
-                            element1["categorias"]["categoria"].forEach(element2 =>{
-                                if(element2["nombre"]!==undefined){
-                                    console.log("nombre categoria: "+element2["nombre"]);
-                                }                                
+                    if (element1["categorias"] !== undefined) {
+                        if (element1["categorias"]["categoria"] !== undefined) {
+                            element1["categorias"]["categoria"].forEach(element2 => {
+                                if (element2["nombre"] !== undefined) {
+                                    categoria_nombre+=element2["nombre"]+",";
+                                    //console.log("nombre categoria: " + element2["nombre"]);
+                                   
+                                }
                             });
+                            InsertarCategorias(categoria_nombre,puesto_nombre);
+                            categoria_nombre="";
                         }
                     }
-                    if(element1["requisitos"]!==undefined){
-                        if(element1["requisitos"]["requisito"]!==undefined){
-                            element1["requisitos"]["requisito"].forEach(element2 =>{
-                                if(element2["nombre"]!==undefined){
-                                    console.log("nombre requisito: "+element2["nombre"]);
+                    if (element1["requisitos"] !== undefined) {
+                        if (element1["requisitos"]["requisito"] !== undefined) {
+                            element1["requisitos"]["requisito"].forEach(element2 => {
+                                if (element2["nombre"] !== undefined) {
+                                   // console.log("nombre requisito: " + element2["nombre"]);
+                                   requisito_nombre=element2["nombre"];
                                 }
-                                if(element2["formatos"]!==undefined){
-                                    if(element2["formatos"]["formato"]!==undefined){
+                                if (element2["formatos"] !== undefined) {
+                                    if (element2["formatos"]["formato"] !== undefined) {
                                         element2["formatos"]["formato"].forEach(element3 => {
-                                            if(element3["nombre"]!==undefined){
-                                                console.log("nombre formato: "+element3["nombre"]);
+                                            if (element3["nombre"] !== undefined) {
+                                                requisito_formato+=element3["nombre"]+" ";
+                                               // console.log("nombre formato: " + element3["nombre"]);
                                             }
                                         });
                                     }
                                 }
-                                if(element2["tamaño"]!==undefined){
-                                    console.log("tamaño formato: "+element2["tamaño"]);
+                                if (element2["tamaño"] !== undefined) {
+                                   // console.log("tamaño formato: " + element2["tamaño"]);
+                                   requisito_tamano=element2["tamaño"];
                                 }
-                                if(element2["obligatorio"]!==undefined){
-                                    console.log("formato obligatorio: "+element2["obligatorio"]);
+                                if (element2["obligatorio"] !== undefined) {
+                                   // console.log("formato obligatorio: " + element2["obligatorio"]);
+                                   requisito_obligatorio=element2["obligatorio"];
                                 }
+                                
                             });
+                            InsertarRequisitos(requisito_nombre,requisito_formato,requisito_tamano,requisito_obligatorio,puesto_nombre);
+                            requisito_formato="";
                         }
+
                     }
+                    InsertarPuestos(puesto_salario,puesto_imagen,departamento_nombre,puesto_nombre);
                 });
+                
+            }
+
+           
+            
+        }
+        
+        if (element["departamentos"] !== undefined) {
+            if (element["departamentos"]["departamento"] !== undefined) {
+                departamento_padre=departamento_nombre;
+                formato(element)
+                departamento_padre="aqui";
             }
         }
-        if(element["departamentos"]!==undefined){
-            if(element["departamentos"]["departamento"]!==undefined){
-                console.log("estoy aqui en otro depto");
-                recorrer(element)
-            }
-        }
+
     });
-    
+
 }
 
 
 
-router.post('/tokenrefresco', (req,res)=>{
+router.post('/tokenrefresco', (req, res) => {
     console.log("generandoTokenRefresco");
-    const username = req.body.usuario;
+    const username = usuarioper;
     const user = { name: username }
-    const refreshToken = generateTokenRefresco(user);              
-    return res.status(200).json({refreshToken});
+    const refreshToken = generateTokenRefresco(user);
+    return res.status(200).json({ refreshToken });
 });
 
-router.post('/visualizarArchivo',(req,res)=> {
+router.post('/visualizarArchivo', (req, res) => {
     console.log("entrando a visualizar Archivo")
     const token = req.headers['authorization'];
-    jwt.verify(token,'regenerando',(err,user)=> {
-        if (err){
-            return res.status(403).json({msg: 'No autorizado'});
+    jwt.verify(token, 'regenerando', (err, user) => {
+        if (err) {
+            return res.status(403).json({ msg: 'No autorizado' });
         } else {
-            res.status(200).json({msg: archivo})
+            res.status(200).json({ msg: archivo })
+        }
+    })
+})
+
+router.post('/regenerar', (req, res) => {
+    console.log("entrando a visualizar Archivo")
+    const token = req.headers['authorization'];
+    jwt.verify(token, 'regenerando', (err, user) => {
+        if (err) {
+            return res.status(403).json({ msg: 'No autorizado' });
+        } else {
+            res.status(200).json({ msg: user })
         }
     })
 })
 
 
+router.get('/obtener/puestos', async function(req,res){
+    console.log("Hi!");
+
+    try {
+        sql = "select nombrepuesto from puesto";
+        let result = await BD.Open(sql, [], false);
+        console.log(result.rows);
+        console.log(result.rows.length);
+        res.send({status:200,data:result.rows});
+    } catch (error) {
+        res.send("error" + error);
+    }
+});
+
+
+router.get('/obtener/aplicante', async function(req,res){
+    console.log("Hi!");
+
+    try {
+        sql = "select cui, nombres,apellidos,correo,direccion,telefono,cv,estado from aplicante";
+        let result = await BD.Open(sql, [], false);
+        console.log(result.rows);
+        console.log(result.rows.length);
+        res.send({status:200,data:result.rows});
+    } catch (error) {
+        res.send("error" + error);
+    }
+});
+
+
+router.get('/obtener/carrusel', async function(req,res){
+    console.log("Hi!");
+
+    try {
+        sql = "select nombrepuesto,salario,imagen from puesto";
+        let result = await BD.Open(sql, [], false);
+        console.log(result.rows);
+        console.log(result.rows.length);
+        res.send({status:200,data:result.rows});
+    } catch (error) {
+        res.send("error" + error);
+    }
+});
+
+//MOSTRAR BUSQUEDA
+router.post('/obtener/plaza', async function (req, res) {
+    console.log("donde crees que estoy? plaza")
+
+    const { puesto } = req.body;
+    console.log(puesto);
+
+    try {
+        sql = "select nombrepuesto, salario, nombredepartamento from puesto where nombrepuesto like '%"+puesto+"%'";
+        console.log("hice consulta plaza");
+
+        let result = await BD.Open(sql, [], false);
+
+
+        console.log(result.rows.length);
+        res.send({ status: 200, data: result.rows });
+    } catch (error) {
+        res.send("error" + error);
+    }
+});
 router.get('/', async (req, res) => {
 
     sql = "select * from persona where nombre='susesof'";
@@ -473,3 +812,61 @@ router.post('/subirxml', async (req, res) => {
 })
 
 module.exports = router;
+
+async function InsertarDepartamentos(nombre,capital,padre){
+    try {
+        if (departamento_padre==="aqui"){
+            sql = "insert into departamento(nombre,capital_total) values (:nombre,:capital)";
+
+            let result = await BD.Open(sql, [nombre, capital], true);
+            console.log(result.rowsAffected); 
+        } else {
+            console.log("departamento padre: "+padre+ "departamento hijo: "+nombre);
+            sql1 = "insert into departamento(nombre,capital_total,padre) values (:nombre,:capital,:padre)";
+            let result = await BD.Open(sql1, [nombre, capital,padre], true);
+            console.log(result.rowsAffected); 
+        }
+    } catch (error) {
+        console.log("error al cargar departamentos")
+    }
+}
+
+async function InsertarCategorias(nombre,puesto){
+    try {
+            sql = "insert into categoria(nombre,puesto) values (:nombre,:puesto)";
+            let result = await BD.Open(sql, [nombre, puesto], true);
+            console.log(result.rowsAffected); 
+       
+    } catch (error) {
+        console.log("error al cargar categorias")
+        console.log(error)
+    }
+}
+
+async function InsertarRequisitos(nombrerequisito,formato,tamano,obligatorio,nombrepuesto){
+    console.log("ENTRE A INSERTAR REQUISITOS");
+    try {
+            sql = "insert into requisito(nombrepuesto,nombrerequisito,formato,tamano,obligatorio) values (:nombrepuesto,:nombrerequisito,:formato,:tamano,:obligatorio)";
+            let result = await BD.Open(sql, [nombrepuesto,nombrerequisito,formato,tamano,obligatorio], true);
+            console.log(result.rowsAffected); 
+       
+    } catch (error) {
+        console.log("error al cargar requisitos")
+        console.log(error)
+    }
+}
+
+async function InsertarPuestos(salario,imagen,nombre_departamento,nombrepuesto){
+    console.log(nombrepuesto+salario+imagen+nombre_departamento);
+
+    try {
+        sql = "insert into puesto(nombrepuesto,salario,imagen,nombredepartamento) values (:nombrepuesto,:salario,:imagen,:nombre_departamento)";
+        let result = await BD.Open(sql, [nombrepuesto,salario,imagen,nombre_departamento], true);
+        console.log(result.rowsAffected); 
+        
+    } catch (error) {
+        console.log("error al cargar puestos");
+    }
+
+
+}

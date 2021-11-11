@@ -1,20 +1,173 @@
 
-
 import React, { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { mostrardatos } from "api/acciones.js"
-import { cargaBD } from "api/acciones";
+import { cargaBD } from "api/acciones.js";
+//este
+import { borrarUsuario } from "api/acciones.js";
+import { setearpuesto } from "api/acciones.js";
 
+import { addUser } from "api/acciones.js";
+import { tablausuario } from "api/acciones.js";
 
+import { useHistory } from "react-router";
 
 // components
 
 import Navbar from "components/Navbars/AuthNavbar.js";
 import Footer from "components/Footers/Footer.js";
+import { editarUser } from "api/acciones.js";
 
 export default function Landing() {
+  
+
+  const nombreRef = useRef();
+  const passwordRef = useRef();
+  const Eliminarusuario = useRef();
+  const fechafRef =useRef();
+  const rolRef = useRef();
+  const idRef= useRef();
+  const nombreEditado = useRef();
+  const contrasenaEditada= useRef();
 
   const [loading, setLoading] = useState(false);
+  const [usuarios, setUsuarios] = React.useState([]);
+  const [puesto, setPuesto] = React.useState([]);
+
+  let history = useHistory();
+
+
+  React.useEffect(() => {
+    async function puestos() {
+      const pue = await setearpuesto();
+      const respuesta = await pue.json();
+      return respuesta;
+    }
+
+    puestos().then((respuesta) => {
+      if (respuesta.status === 200) {
+        console.log(respuesta.data);
+        if (respuesta.data !== undefined) {
+          setPuesto(respuesta.data);
+        }
+
+      } else {
+        console.log("error al cargar puestos")
+      }
+    })
+
+  }, []);
+  /*React.useEffect(() => {
+    async function datosusuario(){
+      const usuario=await tablausuario();
+      const respuesta=await usuario.json();
+      return respuesta;
+    }
+
+    datosusuario().then((respuesta)=>{
+      if(respuesta.status===200){
+        console.log(respuesta.data);
+        setUsuarios(respuesta.data);
+      }else{
+        console.log("no se llego a los datos del usuario")
+      }
+    })
+  });*/
+
+
+
+  async function editarUsuario(e) {
+    e.preventDefault();
+    setLoading(true);
+
+    const roleditar = document.getElementById("roles").value;
+
+    try {
+      const rawResponse = await editarUser(
+        idRef.current.value,
+        nombreEditado.current.value,
+        contrasenaEditada.current.value,
+        roleditar
+      ).then(res => res.json())
+      .then((data) => {
+        console.log(data);
+        if (data["msg"] === "No autorizado") {
+          alert("Tu sesion esta caducada porfavor iniciar sesión de nuevo");
+          history.push('refrescarpag');
+        } else{
+          alert("USUARIO EDITADO CORRECTAMENTE")
+          history.push('landing');
+        }
+      });
+      console.log(rawResponse);
+    } catch (error) {
+      console.log(error);
+      alert("error")
+    }
+  }
+
+  async function deleteUser(e) {
+    e.preventDefault();
+    setLoading(true);
+
+
+    try {
+
+
+      const rawResponse = await borrarUsuario(
+
+        Eliminarusuario.current.value,
+        fechafRef.current.value
+      ).then(res => res.json())
+      .then((data) => {
+        console.log(data);
+        if (data["msg"] === "No autorizado") {
+          alert("Tu sesion esta caducada porfavor iniciar sesión de nuevo");
+          history.push('refrescarpag');
+        } else{
+          alert("USUARIO BORRADO CORRECTAMENTE")
+        }
+      });
+      console.log(rawResponse);
+
+    } catch (error) {
+      console.log(error);
+      alert("error")
+    }
+
+  }
+
+  async function newUser(e) {
+    e.preventDefault();
+    setLoading(true);
+    const rolRegistrado = document.getElementById("rolesregistro").value;
+    const puesto =  document.getElementById("puesto").value;
+
+    try {
+      const rawResponse = await addUser(
+        nombreRef.current.value,
+        passwordRef.current.value,
+        rolRegistrado,
+        puesto
+      ).then(res => res.json())
+      .then((data) => {
+        console.log(data);
+        if (data["msg"] === "No autorizado") {
+          alert("Tu sesion esta caducada porfavor iniciar sesión de nuevo");
+          history.push('refrescarpag');
+        } else{
+          alert("USUARIO CREADO CORRECTAMENTE")
+        }
+      });
+      console.log(rawResponse);
+    } catch (error) {
+      console.log(error);
+      alert("error")
+    }
+
+  }
+  
+
   async function cargardatos(e) {
     try {
       const rawResponse = await cargaBD(
@@ -23,13 +176,32 @@ export default function Landing() {
           console.log(data);
           if (data["msg"] === "No autorizado") {
             alert("Tu sesion esta caducada porfavor iniciar sesión de nuevo");
+            history.push('refrescarpag');
 
           }
         });
-     return(rawResponse);
+      return (rawResponse);
     } catch (error) {
       console.log(error);
     }
+  }
+  async function VerUsuarios(e) {
+
+    async function datosusuario(){
+      const usuario=await tablausuario();
+      const respuesta=await usuario.json();
+      return respuesta;
+    }
+
+    datosusuario().then((respuesta)=>{
+      if(respuesta.status===200){
+        console.log(respuesta.data);
+        setUsuarios(respuesta.data);
+      }else{
+        console.log("no se llego a los datos del usuario")
+      }
+    })
+
   }
 
   async function visualizar(e) {
@@ -43,11 +215,11 @@ export default function Landing() {
           imprimir = data["msg"];
           if (data["msg"] === "No autorizado") {
             alert("Tu sesion esta caducada porfavor iniciar sesión de nuevo");
-
+            history.push('refrescarpag');
           } else {
             document.getElementById('seccion').value = imprimir;
           }
-         console.log(rawResponse);
+          console.log(rawResponse);
         });
 
 
@@ -274,6 +446,13 @@ export default function Landing() {
                   Some quick example text to build on the card title and make up
                   the bulk of the card's content.
                 </p>
+                <button
+                            className="bg-blueGray-800 text-white active:bg-blueGray-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150"
+                            type="button"
+                            onClick={VerUsuarios}
+                          >
+                            VER USUARIOS
+                          </button>
               </div>
               <div className="w-full lg:w-3/12 px-4 text-center">
                 <div className="text-blueGray-800 p-3 w-12 h-12 shadow-lg rounded-full bg-white inline-flex items-center justify-center">
@@ -312,12 +491,43 @@ export default function Landing() {
                   the bulk of the card's content.
                 </p>
               </div>
-            </div>
+              <div className="container mx-auto px-4 lg:pt-24 lg:pb-64">
+            <table className="tablesorter" responsive>
+              <thead className="text-primary text-white" >
+                <tr>
+                 <th className="header"> ID USUARIO</th>
+                  <th className="header">USERNAME</th>
+                  <th className="header">PASSWORD</th>
+                  <th className="header">ESTADO</th>
+                  <th className="header">FECHA</th>
+                  <th className="header">ROL</th>
+                </tr>
+              </thead>
+              <tbody>
+
+                {usuarios.map((usuario) => {
+                  return (
+                    <tr className="text-blueGray-400">
+                      <td>{usuario[0]}</td>
+                     
+                      <td>{usuario[1]}</td>
+                     
+                      <td>{usuario[2]}</td>
+                  
+                      <td>{usuario[3]}</td>
+                   
+                      <td>{usuario[4]}</td>
+
+                      <td>{usuario[5]}</td>
+                    </tr>
+                  );
+                })}
+
+              </tbody>
+            </table>
 
           </div>
-          <div className="container mx-auto px-4 lg:pt-24 lg:pb-64">
-
-
+            </div>
           </div>
         </section>
         <section className="relative py-20">
@@ -373,6 +583,7 @@ export default function Landing() {
                   </label>
                   <input
                     type="text"
+                    ref={nombreRef}
                     className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                     placeholder="username"
                   />
@@ -387,54 +598,53 @@ export default function Landing() {
                   </label>
                   <input
                     type="password"
+                    ref={passwordRef}
                     className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                     placeholder="contraseña"
                   />
                 </div>
+              
+                
                 <div className="relative w-full mb-3">
                   <label
                     className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                    htmlFor="fechainicio"
+                    htmlFor="contraseña"
                   >
-                    Fecha inicio
+                    rol
                   </label>
-                  <input
-                    type="fecha"
-                    className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                    placeholder="fecha inicio"
-                  />
+                  <select id = "rolesregistro" >
+                            <option value="N/A">Seleccionar Rol</option>
+                            <option value="administrador">ADMINISTRADOR</option>
+                            <option value="coordinador">COORDINADOR</option>
+                            <option value="revisor">REVISOR</option>
+                            <option value="reclutador">RECLUTADOR</option>
+                </select>
                 </div>
+
+
                 <div className="relative w-full mb-3">
                   <label
                     className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                    htmlFor="fechafin"
+                    htmlFor="contraseña"
                   >
-                    Fecha fin
+                    Puesto
                   </label>
-                  <input
-                    type="fecha"
-                    className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                    placeholder="fecha fin"
-                  />
+                  <select id="puesto">
+                          <option value="N/A">PUESTO</option>
+                          {puesto.map((item) => {
+                            return (
+                              <option value={item}>{item}</option>
+                            );
+                          })}
+                        </select>
                 </div>
-                <div className="relative w-full mb-3">
-                  <label
-                    className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                    htmlFor="rol"
-                  >
-                    Rol
-                  </label>
-                  <input
-                    type="rol"
-                    className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                    placeholder="Rol"
-                  />
-                </div>
+                
 
                 <div className="text-center mt-6">
                   <button
                     className="bg-blueGray-800 text-white active:bg-blueGray-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
                     type="button"
+                    onClick={newUser}
                   >
                     Crear Usuario
                   </button>
@@ -491,14 +701,30 @@ export default function Landing() {
                   </label>
                   <input
                     type="text"
+                    ref={Eliminarusuario}
                     className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                     placeholder="username"
+                  />
+                </div>
+                <div>
+                  <label
+                    className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
+                    htmlFor="full-name"
+                  >
+                    Fecha en la que se dio de baja al usuario
+                  </label>
+                  <input
+                    type="text"
+                    ref={fechafRef}
+                    className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                    placeholder="formtao dd/mm/aa"
                   />
                 </div>
                 <div className="text-center mt-6">
                   <button
                     className="bg-blueGray-800 text-white active:bg-blueGray-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
                     type="button"
+                    onClick={deleteUser}
                   >
                     Eliminar usuario
                   </button>
@@ -549,7 +775,24 @@ export default function Landing() {
                   EDITAR USUARIO
                 </h4>
                 <p className="leading-relaxed mt-1 mb-4 text-blueGray-500">
-                  Complete este formulario para editar un usuario.
+                  Ingrese el id el usuario a editar
+                </p>
+                <div className="relative w-full mb-3 mt-8">
+                  <label
+                    className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
+                    htmlFor="full-name"
+                  >
+                    IDUSUARIO
+                  </label>
+                  <input
+                    type="text"
+                    ref={idRef}
+                    className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                    placeholder="username"
+                  />
+                </div>
+                <p className="mt-4 text-lg leading-relaxed text-blueGray-500">
+                  Coloque los datos a editar.
                 </p>
                 <div className="relative w-full mb-3 mt-8">
                   <label
@@ -560,6 +803,7 @@ export default function Landing() {
                   </label>
                   <input
                     type="text"
+                    ref={nombreEditado}
                     className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                     placeholder="username"
                   />
@@ -574,6 +818,7 @@ export default function Landing() {
                   </label>
                   <input
                     type="password"
+                    ref={contrasenaEditada}
                     className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                     placeholder="contraseña"
                   />
@@ -581,49 +826,27 @@ export default function Landing() {
                 <div className="relative w-full mb-3">
                   <label
                     className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                    htmlFor="fechainicio"
+                    htmlFor="contraseña"
                   >
-                    Fecha inicio
+                    rol
                   </label>
-                  <input
-                    type="fecha"
-                    className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                    placeholder="fecha inicio"
-                  />
+                  <select id = "roles" >
+                            <option value="N/A">Seleccionar Rol</option>
+                            <option value="administrador">ADMINISTRADOR</option>
+                            <option value="coordinador">COORDINADOR</option>
+                            <option value="revisor">REVISOR</option>
+                            <option value="reclutador">RECLUTADOR</option>
+                            <option value="aplicante">APLICANTE</option>
+                </select>
                 </div>
-                <div className="relative w-full mb-3">
-                  <label
-                    className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                    htmlFor="fechafin"
-                  >
-                    Fecha fin
-                  </label>
-                  <input
-                    type="fecha"
-                    className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                    placeholder="fecha fin"
-                  />
-                </div>
-                <div className="relative w-full mb-3">
-                  <label
-                    className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                    htmlFor="rol"
-                  >
-                    Rol
-                  </label>
-                  <input
-                    type="rol"
-                    className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                    placeholder="Rol"
-                  />
-                </div>
-
+                
                 <div className="text-center mt-6">
                   <button
                     className="bg-blueGray-800 text-white active:bg-blueGray-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
                     type="button"
+                    onClick={editarUsuario}
                   >
-                    Crear Usuario
+                    Editar Usuario
                   </button>
                 </div>
               </div>
