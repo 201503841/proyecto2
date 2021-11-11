@@ -5,6 +5,9 @@ import Footer from "components/Footers/Footer.js";
 import { useHistory } from "react-router";
 import { upload } from "../api/acciones.js"
 import { correo } from "../api/acciones.js"
+import { setearpuesto } from "api/acciones.js";
+
+
 import { CardMembershipSharp } from "@material-ui/icons";
 
 export default function Profile() {
@@ -18,19 +21,42 @@ export default function Profile() {
   const telefonoRef = useRef();
   const [loading, setLoading] = useState(false);
 
-  let history=useHistory();
+  const [puesto, setPuesto] = React.useState([]);
 
-  const cambiar=e=>{
+  let history = useHistory();
+
+  const cambiar = e => {
     history.push('/profile');
   }
-    
-  
+
+  React.useEffect(() => {
+    async function puestos() {
+      const pue = await setearpuesto();
+      const respuesta = await pue.json();
+      return respuesta;
+    }
+
+
+    puestos().then((respuesta) => {
+      if (respuesta.status === 200) {
+        console.log(respuesta.data);
+        if (respuesta.data !== undefined) {
+          setPuesto(respuesta.data);
+        }
+
+      } else {
+        console.log("error al cargar puestos")
+      }
+    })
+
+  }, []);
+
 
   async function accion(e) {
     e.preventDefault();
     setLoading(true);
 
-
+    const puesto = document.getElementById("puesto_calificar").value;
 
     alert("Hola: " + nombreRef.current.value);
 
@@ -42,15 +68,16 @@ export default function Profile() {
         apellidoRef.current.value,
         correoRef.current.value,
         direccionRef.current.value,
-        telefonoRef.current.value
+        telefonoRef.current.value,
+        puesto
       );
 
       console.log(dpiRef.current.value + nombreRef.current.value + apellidoRef.current.value);
-      const respuesta=await rawResponse.json();
+      const respuesta = await rawResponse.json();
 
       console.log(rawResponse);
 
-      if (rawResponse.status === 200) {  
+      if (rawResponse.status === 200) {
         alert("FORMULARIO ENVIADO CORRECTAMENTE")
       } else {
         alert("ALGO OCURRIO MAL")
@@ -65,13 +92,13 @@ export default function Profile() {
       );
       console.log(enviocorreo);
 
-      if (enviocorreo.status === 200) {  
+      if (enviocorreo.status === 200) {
         alert("SE ENVIO UN MENSAJE A TU CORREO ELECTRONICO FAVOR REVISAR TU BANDEJA")
       } else {
         alert("ALGO OCURRIO MAL")
       }
 
-      
+
     } catch (error) {
       console.log(error);
       alert("error")
@@ -221,6 +248,21 @@ export default function Profile() {
                                 className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                                 placeholder="Telefóno" />
                             </div>
+                            <div>
+                            <label
+                                className="block uppercase text-blueGray-600 text-left font-bold mb-2"
+                                htmlFor="grid-password">
+                                PUESTO:
+                              </label>
+                              <select id="puesto_calificar">
+                                <option value="N/A">PUESTO</option>
+                                {puesto.map((item) => {
+                                  return (
+                                    <option value={item}>{item}</option>
+                                  );
+                                })}
+                              </select>
+                            </div>
                             <div className="relative w-full mb-3">
                               <label
                                 className="block uppercase text-blueGray-600 text-left font-bold mb-2"
@@ -233,9 +275,9 @@ export default function Profile() {
                                 <button
                                   className="nav-link d-none d-lg-block"
                                   color="default">
-                                  
-                                  <i className="tim-icons icon-book-bookmark"/> SUBIR CV
-                                 
+
+                                  <i className="tim-icons icon-book-bookmark" /> SUBIR CV
+
                                 </button>
                               </form>
                             </div>

@@ -1,5 +1,5 @@
 /*eslint-disable*/
-import React, { useRef, useState} from "react";
+import React, { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 
 import IndexNavbar from "components/Navbars/IndexNavbar.js";
@@ -9,6 +9,8 @@ import { setearpuesto } from "api/acciones.js";
 import { endpointcalificacion } from "api/acciones.js";
 import { datospuesto } from "api/acciones.js";
 import { datosbusqueda } from "api/acciones.js";
+import { filtrobuscar } from "api/acciones.js";
+
 import imagen1 from '../imagenes/trabajo1.jpg';
 import imagen2 from '../imagenes/trabajo2.jpg';
 import imagen3 from '../imagenes/trabajo3.png';
@@ -52,7 +54,7 @@ const items = [
 items*/
 
 export default function Index() {
-  const plazaRef=useRef();
+  const plazaRef = useRef();
 
   const [demoModal, setDemoModal] = React.useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -60,6 +62,9 @@ export default function Index() {
   const [puesto, setPuesto] = React.useState([]);
   const [vista, setCarrusel] = React.useState([]);
   const [consulta, setDatos] = React.useState([]);
+  const [filtracion, setFiltro] = React.useState([]);
+
+
 
   React.useEffect(() => {
     async function puestos() {
@@ -73,7 +78,7 @@ export default function Index() {
       return respuesta;
     }
 
-    
+
     vercarrusel().then((respuesta) => {
       if (respuesta.status === 200) {
         console.log(respuesta.data);
@@ -99,6 +104,26 @@ export default function Index() {
     })
 
   }, []);
+
+  async function buscando() {
+    async function filtrarpuesto() {
+      console.log("probando busqueda: " + document.getElementById("rolesbuscar").value)
+      const puesto = await filtrobuscar(document.getElementById("rolesbuscar").value);
+      const respuesta = await puesto.json();
+      return respuesta;
+    }
+
+    filtrarpuesto().then((respuesta) => {
+      if (respuesta.status === 200) {
+        console.log(respuesta.data);
+        if (respuesta.data !== undefined) {
+          setFiltro(respuesta.data);
+        }
+      } else {
+        console.error("error al cargar los puestos");
+      }
+    })
+  }
 
 
   async function enviarCali(e) {
@@ -131,7 +156,9 @@ export default function Index() {
 
   }
 
-  async function cambios(e){
+
+
+  async function cambios(e) {
 
     async function verplaza() {
       const plaza = await datosbusqueda(
@@ -140,7 +167,7 @@ export default function Index() {
       const respuesta = await plaza.json();
       console.log(respuesta);
       return respuesta;
-      
+
     }
 
     verplaza().then((respuesta) => {
@@ -387,7 +414,7 @@ export default function Index() {
                 className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                 placeholder="plaza"
               />
-              
+
               <button
                 className="bg-blueGray-800 text-white active:bg-blueGray-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150"
                 type="button"
@@ -399,37 +426,83 @@ export default function Index() {
             </div>
 
             <div className="container mx-auto px-4 lg:pt-24 lg:pb-64">
-                <table className="tablesorter" responsive>
-                  <thead className="text-primary text-white" >
-                    <tr>
-                      <th className="header"> NOMBRE PUESTO</th>
-                      <th className="header">SALARIO</th>
-                      <th className="header">NOMBRE DEPARTAMENTO</th>
-                      
-                    </tr>
-                  </thead>
-                  <tbody>
+              <table className="tablesorter" responsive>
+                <thead className="text-primary text-white" >
+                  <tr>
+                    <th className="header"> NOMBRE PUESTO</th>
+                    <th className="header">SALARIO</th>
+                    <th className="header">NOMBRE DEPARTAMENTO</th>
+
+                  </tr>
+                </thead>
+                <tbody>
 
                   {consulta.map((dato) => {
+                    return (
+                      <tr className="text-blueGray-400">
+                        <td>{dato[0]}</td>
+
+                        <td>{dato[1]}</td>
+
+                        <td>{dato[2]}</td>
+
+                      </tr>
+                    );
+                  })}
+
+                </tbody>
+              </table>
+
+            </div>
+
+            <select id="rolesbuscar" >
+              <option value="N/A">ROL</option>
+              <option value="administrador">ADMINISTRADOR</option>
+              <option value="coordinador">COORDINADOR</option>
+              <option value="revisor">REVISOR</option>
+              <option value="reclutador">RECLUTADOR</option>
+            </select>
+            <button
+              className="bg-blueGray-800 text-white active:bg-blueGray-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150"
+              type="button"
+              onClick={buscando}
+            >
+              BUSCAR
+            </button>
+
+            <br /><br />
+
+            <table className="tablesorter" responsive>
+              <thead className="text-primary text-white">
+                <tr>
+                  <th className="header">IDUSUARIO</th>
+                  <th className="header">USERNAME</th>
+                  <th className="header">FECHA INICIO</th>
+                  <th className="header">ESTADO</th>
+                  <th className="header">ROL</th>
+                </tr>
+              </thead>
+              <tbody>
+
+                {filtracion.map((usuario) => {
                   return (
                     <tr className="text-blueGray-400">
-                      <td>{dato[0]}</td>
-                     
-                      <td>{dato[1]}</td>
-                     
-                      <td>{dato[2]}</td>
-
+                      <td>{usuario[0]}</td>
+                      <td>{usuario[1]}</td>
+                      <td>{usuario[2]}</td>
+                      <td>{usuario[3]}</td>
+                      <td>{usuario[4]}</td>
                     </tr>
                   );
                 })}
 
-                  </tbody>
-                </table>
-
-              </div>
-              
+              </tbody>
+            </table>
 
           </div>
+        </div>
+        <div>
+
         </div>
       </section>
       <section className="pb-16 bg-blueGray-200 relative pt-32">

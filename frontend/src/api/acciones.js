@@ -20,6 +20,22 @@ const estrellas ="http://localhost:5000/agregar/calificacion";
 const carrusel ="http://localhost:5000/obtener/carrusel";
 const tabla ="http://localhost:5000/obtener/plaza";
 const veraplicante = "http://localhost:5000/obtener/aplicante";
+const veraplirevisor="http://localhost:5000/aplicante/revisor";
+const buscarusuariorol="http://localhost:5000/filtro/usuario";
+
+
+export async function filtrobuscar(rol){
+  return fetch(buscarusuariorol,{
+    method: "POST",
+        headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      } ,
+      body: JSON.stringify({
+        rol: rol
+      }),
+    });
+}
 
 export async function tablausuario(){
   return fetch(verusuario,{
@@ -40,6 +56,18 @@ export async function tablaplicante(){
     } 
   });
 }
+
+
+export async function tablarevisor(){
+  return fetch(veraplirevisor,{
+    method:"GET",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    } 
+  });
+}
+
 
 export async function tablaplanilla(){
   return fetch(veraplicante,{
@@ -98,6 +126,19 @@ export async function endpointcalificacion(puesto,calificacion){
       calificacion:calificacion
     }),
   });
+}
+
+export async function buscar_usuario_rol(rol){
+  return fetch(buscarusuariorol,{
+    method: "POST",
+        headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      } ,
+      body: JSON.stringify({
+        ROL: rol
+      }),
+    });
 }
 
 export async function nuevousuario(usuario,password){
@@ -189,7 +230,7 @@ export async function nuevousuario(usuario,password){
   }
 
 
-  export async function upload(cui,nombres,apellidos,correo,direccion,telefono){
+  export async function upload(cui,nombres,apellidos,correo,direccion,telefono,puesto){
     return fetch(url_upload,{
     method: "POST",
         headers: {
@@ -203,7 +244,8 @@ export async function nuevousuario(usuario,password){
         correo:correo,
         direccion:direccion,
         telefono:telefono,
-        cv: ".files/postulantes/"+nombres+apellidos
+        cv: ".files/postulantes/"+nombres+apellidos,
+        puesto: puesto
       }),
     });
   }

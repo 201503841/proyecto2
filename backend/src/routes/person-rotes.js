@@ -216,13 +216,13 @@ router.post('/login/aplicante', async (req, res) => {
 //REGISTRO POSTULANTE
 router.post('/agregar/aplicante', async (req, res) => {
     console.log("entre");
-    const { cui, nombres, apellidos, correo, direccion, telefono,cv } = req.body;
+    const { cui, nombres, apellidos, correo, direccion, telefono,cv,puesto } = req.body;
 
     try {
 
-        sql = "insert into aplicante(cui,nombres,apellidos,correo,direccion,telefono,cv,estado) values (:cui,:nombres,:apellidos,:correo,:direccion,:telefono,:cv,'pendiente')";
+        sql = "insert into aplicante(cui,nombres,apellidos,correo,direccion,telefono,cv,estado,puesto) values (:cui,:nombres,:apellidos,:correo,:direccion,:telefono,:cv,'pendiente',:puesto)";
 
-        let result = await BD.Open(sql, [cui, nombres, apellidos, correo, direccion, telefono,cv], true);
+        let result = await BD.Open(sql, [cui, nombres, apellidos, correo, direccion, telefono,cv,puesto], true);
         console.log(result.rowsAffected);
         return res.status(200).json({ result });
 
@@ -734,6 +734,36 @@ router.get('/obtener/aplicante', async function(req,res){
     try {
         sql = "select cui, nombres,apellidos,correo,direccion,telefono,cv,estado from aplicante";
         let result = await BD.Open(sql, [], false);
+        console.log(result.rows);
+        console.log(result.rows.length);
+        res.send({status:200,data:result.rows});
+    } catch (error) {
+        res.send("error" + error);
+    }
+});
+
+
+router.get('/aplicante/revisor', async function(req,res){
+    console.log("Hi!");
+
+    try {
+        sql = "select cui, nombres,apellidos,correo,direccion,telefono,cv,estado,puesto from aplicante";
+        let result = await BD.Open(sql, [], false);
+        console.log(result.rows);
+        console.log(result.rows.length);
+        res.send({status:200,data:result.rows});
+    } catch (error) {
+        res.send("error" + error);
+    }
+});
+
+
+router.post('/filtro/usuario', async function(req,res){
+    console.log("Hi filtro!");
+    const { rol } = req.body;
+    try {
+        sql = "select idusuario, nombre,fecha_inicio,estado,rol  from persona where rol=:rol";
+        let result = await BD.Open(sql, [rol], false);
         console.log(result.rows);
         console.log(result.rows.length);
         res.send({status:200,data:result.rows});

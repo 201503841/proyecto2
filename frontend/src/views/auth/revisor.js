@@ -2,7 +2,7 @@ import React, { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 
 
-import { tablaplicante } from "api/acciones.js";
+import { tablarevisor } from "api/acciones.js";
 import { useHistory } from "react-router";
 
 // components
@@ -13,20 +13,23 @@ import Footer from "components/Footers/Footer.js";
 
 export default function Revisor() {
 
-  const [usuarios, setAplicante] = React.useState([]);
+  const [usuarios, setRevisor] = React.useState([]);
 
-  const [loading, setLoading] = useState(false);async function Veraplicantes(e) {
+  const [loading, setLoading] = useState(false);
 
-    async function datoaplicante() {
-      const usuario = await tablaplicante();
+
+  async function Veraplicantes(e) {
+
+    async function datorevisor() {
+      const usuario = await tablarevisor();
       const respuesta = await usuario.json();
       return respuesta;
     }
 
-    datoaplicante().then((respuesta) => {
+    datorevisor().then((respuesta) => {
       if (respuesta.status === 200) {
         console.log(respuesta.data);
-        setAplicante(respuesta.data);
+        setRevisor(respuesta.data);
       } else {
         console.log("no se llego a los datos del aplicante")
       }
@@ -64,7 +67,7 @@ export default function Revisor() {
                     BIENVENIDO REVISOR.
                   </h1>
                   <p className="mt-4 text-lg text-blueGray-200">
-                    EN ESTA SECCION PUEDES CARGAR TODOS LOS PUESTOS, DEPARTAMENTOS, CATEGORIAS, REQUISITOS DE LOS PUESTOS DISPONIBLES MEDIANTE UN ARCHIVO XML, TAMBIEN PUEDES OBSERVAR LOS USUARIOS QUE EXISTEN, TANTO COMO ELIMINARLOS COMO EDITARLOS.
+                    EN ESTA SECCION PODRA OBSERVAR A TODAS LAS PERSONAS QUE SE HAN POSTULADO.
                   </p>
                 </div>
               </div>
@@ -116,90 +119,74 @@ export default function Revisor() {
 
           <div className="container mx-auto px-4">
             <div className="items-center flex flex-wrap">
-              <div className="w-full md:w-4/12 ml-auto mr-auto px-4">
-                <h3 className="text-3xl font-semibold">Cargar XML</h3>
-                <form action='http://localhost:5000/cargamasiva' method="POST" enctype="multipart/form-data">
-                  <input type="file" name="file" />
-                  <button
-                    className="nav-link d-none d-lg-block"
-                    color="default">
-                    <i className="tim-icons icon-book-bookmark" /> SUBIR XML
-                  </button>
-                </form>
-                <h3 className="text-3xl font-semibold">VISUALIZAR XML</h3>
-                <button
-                  className="bg-blueGray-800 text-white active:bg-blueGray-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150"
-                  type="button"
-              
-                >
-                  VISUALIZAR
-                </button>
-                <textarea name="seccion" id="seccion" cols="40" rows="28"> </textarea>
 
-              </div>
               <div className="w-full md:w-5/12 ml-auto mr-auto px-4">
                 <div className="md:pr-12">
                   <div className="text-lightBlue-600 p-3 text-center inline-flex items-center justify-center w-16 h-16 mb-6 shadow-lg rounded-full bg-lightBlue-300">
                     <i className="fas fa-rocket text-xl"></i>
                   </div>
-                  <h3 className="text-3xl font-semibold">CARGA MASIVA</h3>
-                  <p className="mt-4 text-lg leading-relaxed text-blueGray-500">
-                    En esta seccion puedes subir un archivo XML y cargar la información correspondiente.
-                  </p>
+                  <h3 className="text-3xl font-semibold">VISUALIZAR PERSONAS POSTULADAS</h3>
+
                   <ul className="list-none mt-6">
+
+
+
                     <li className="py-2">
-                      <div className="flex items-center">
-                        <div>
-                          <span className="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-lightBlue-600 bg-lightBlue-200 mr-3">
-                            <i className="fas fa-fingerprint"></i>
-                          </span>
-                        </div>
-                        <div>
-                          <h4 className="text-blueGray-500">
-                            DEPARTAMENTOS
-                          </h4>
-                        </div>
-                      </div>
-                    </li>
-                    <li className="py-2">
-                      <div className="flex items-center">
-                        <div>
-                          <span className="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-lightBlue-600 bg-lightBlue-200 mr-3">
-                            <i className="fab fa-html5"></i>
-                          </span>
-                        </div>
-                        <div>
-                          <h4 className="text-blueGray-500">
-                            PUESTOS
-                          </h4>
-                        </div>
-                      </div>
-                    </li>
-                    <li className="py-2">
-                      <div className="flex items-center">
-                        <div>
-                          <span className="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-lightBlue-600 bg-lightBlue-200 mr-3">
-                            <i className="far fa-paper-plane"></i>
-                          </span>
-                        </div>
-                        <div>
-                          <h4 className="text-blueGray-500">
-                            CATEGORIAS
-                          </h4>
-                        </div>
-                      </div>
-                    </li>
-                    <li className="py-2">
-                      <div className="flex items-center">
-                        <div>
-                        </div>
+                      <div >
+                        
+
+                          <table className="tablesorter items-center" responsive>
+                            <thead className="text-primary text-lightBlue-600" >
+                              <tr>
+                                <th className="header"> CUI</th>
+                                <th className="header">NOMBRE</th>
+                                <th className="header">APELLIDO</th>
+                                <th className="header">CORREO</th>
+                                <th className="header">DIRECCION</th>
+                                <th className="header">TELEFONO</th>
+                                <th className="header">CV</th>
+                                <th className="header">ESTADO</th>
+                                <th className="header">PUESTO</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {usuarios.map((usuario) => {
+                                return (
+                                  <tr className="text-blueGray-400">
+                                    <td>{usuario[0]}</td>
+
+                                    <td>{usuario[1]}</td>
+
+                                    <td>{usuario[2]}</td>
+
+                                    <td>{usuario[3]}</td>
+
+                                    <td>{usuario[4]}</td>
+
+                                    <td>{usuario[5]}</td>
+
+                                    <td>{usuario[6]}</td>
+
+                                    <td>{usuario[7]}</td>
+
+                                    <td>{usuario[8]}</td>
+                                  </tr>
+                                );
+                              })}
+
+
+                            </tbody>
+                          </table>
+
+
+                      
                         <div>
                           <button
                             className="bg-blueGray-800 text-white active:bg-blueGray-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150"
                             type="button"
-                            
+                            onClick={Veraplicantes}
                           >
-                            CARGAR INFORMACION A BASE DE DATOS
+                            VISUALIZAR APLICANTES
                           </button>
                         </div>
                       </div>
@@ -257,12 +244,12 @@ export default function Revisor() {
                   the bulk of the card's content.
                 </p>
                 <button
-                            className="bg-blueGray-800 text-white active:bg-blueGray-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150"
-                            type="button"
-                           
-                          >
-                            VER USUARIOS
-                          </button>
+                  className="bg-blueGray-800 text-white active:bg-blueGray-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150"
+                  type="button"
+
+                >
+                  VER USUARIOS
+                </button>
               </div>
               <div className="w-full lg:w-3/12 px-4 text-center">
                 <div className="text-blueGray-800 p-3 w-12 h-12 shadow-lg rounded-full bg-white inline-flex items-center justify-center">
@@ -302,25 +289,25 @@ export default function Revisor() {
                 </p>
               </div>
               <div className="container mx-auto px-4 lg:pt-24 lg:pb-64">
-            <table className="tablesorter" responsive>
-              <thead className="text-primary text-white" >
-                <tr>
-                 <th className="header"> ID USUARIO</th>
-                  <th className="header">USERNAME</th>
-                  <th className="header">PASSWORD</th>
-                  <th className="header">ESTADO</th>
-                  <th className="header">FECHA</th>
-                  <th className="header">ROL</th>
-                </tr>
-              </thead>
-              <tbody>
+                <table className="tablesorter" responsive>
+                  <thead className="text-primary text-white" >
+                    <tr>
+                      <th className="header"> ID USUARIO</th>
+                      <th className="header">USERNAME</th>
+                      <th className="header">PASSWORD</th>
+                      <th className="header">ESTADO</th>
+                      <th className="header">FECHA</th>
+                      <th className="header">ROL</th>
+                    </tr>
+                  </thead>
+                  <tbody>
 
-               
 
-              </tbody>
-            </table>
 
-          </div>
+                  </tbody>
+                </table>
+
+              </div>
             </div>
           </div>
         </section>
@@ -377,7 +364,7 @@ export default function Revisor() {
                   </label>
                   <input
                     type="text"
-             
+
                     className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                     placeholder="username"
                   />
@@ -392,13 +379,13 @@ export default function Revisor() {
                   </label>
                   <input
                     type="password"
-           
+
                     className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                     placeholder="contraseña"
                   />
                 </div>
-              
-                
+
+
                 <div className="relative w-full mb-3">
                   <label
                     className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
@@ -406,14 +393,14 @@ export default function Revisor() {
                   >
                     rol
                   </label>
-                  <select id = "rolesregistro" >
-                            <option value="N/A">Seleccionar Rol</option>
-                            <option value="administrador">ADMINISTRADOR</option>
-                            <option value="coordinador">COORDINADOR</option>
-                            <option value="revisor">REVISOR</option>
-                            <option value="reclutador">RECLUTADOR</option>
-                            <option value="aplicante">APLICANTE</option>
-                </select>
+                  <select id="rolesregistro" >
+                    <option value="N/A">Seleccionar Rol</option>
+                    <option value="administrador">ADMINISTRADOR</option>
+                    <option value="coordinador">COORDINADOR</option>
+                    <option value="revisor">REVISOR</option>
+                    <option value="reclutador">RECLUTADOR</option>
+                    <option value="aplicante">APLICANTE</option>
+                  </select>
                 </div>
 
 
@@ -424,15 +411,15 @@ export default function Revisor() {
                   >
                     Puesto
                   </label>
-                 
+
                 </div>
-                
+
 
                 <div className="text-center mt-6">
                   <button
                     className="bg-blueGray-800 text-white active:bg-blueGray-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
                     type="button"
-             
+
                   >
                     Crear Usuario
                   </button>
@@ -489,7 +476,7 @@ export default function Revisor() {
                   </label>
                   <input
                     type="text"
-                   
+
                     className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                     placeholder="username"
                   />
@@ -503,7 +490,7 @@ export default function Revisor() {
                   </label>
                   <input
                     type="text"
-                  
+
                     className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                     placeholder="formtao dd/mm/aa"
                   />
@@ -512,7 +499,7 @@ export default function Revisor() {
                   <button
                     className="bg-blueGray-800 text-white active:bg-blueGray-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
                     type="button"
-             
+
                   >
                     Eliminar usuario
                   </button>
@@ -574,7 +561,7 @@ export default function Revisor() {
                   </label>
                   <input
                     type="text"
-                    
+
                     className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                     placeholder="username"
                   />
@@ -591,7 +578,7 @@ export default function Revisor() {
                   </label>
                   <input
                     type="text"
-                  
+
                     className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                     placeholder="username"
                   />
@@ -606,7 +593,7 @@ export default function Revisor() {
                   </label>
                   <input
                     type="password"
-                   
+
                     className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                     placeholder="contraseña"
                   />
@@ -618,21 +605,21 @@ export default function Revisor() {
                   >
                     rol
                   </label>
-                  <select id = "roles" >
-                            <option value="N/A">Seleccionar Rol</option>
-                            <option value="administrador">ADMINISTRADOR</option>
-                            <option value="coordinador">COORDINADOR</option>
-                            <option value="revisor">REVISOR</option>
-                            <option value="reclutador">RECLUTADOR</option>
-                            <option value="aplicante">APLICANTE</option>
-                </select>
+                  <select id="roles" >
+                    <option value="N/A">Seleccionar Rol</option>
+                    <option value="administrador">ADMINISTRADOR</option>
+                    <option value="coordinador">COORDINADOR</option>
+                    <option value="revisor">REVISOR</option>
+                    <option value="reclutador">RECLUTADOR</option>
+                    <option value="aplicante">APLICANTE</option>
+                  </select>
                 </div>
-                
+
                 <div className="text-center mt-6">
                   <button
                     className="bg-blueGray-800 text-white active:bg-blueGray-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
                     type="button"
-                  
+
                   >
                     Editar Usuario
                   </button>
